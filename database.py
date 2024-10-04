@@ -14,7 +14,7 @@ def inicializar_db():
         """CREATE TABLE IF NOT EXISTS pedidos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             cliente TEXT NOT NULL,
-            fecha TEXT NOT NULL, 
+            fecha_hora TEXT NOT NULL, 
             cant_combo_s INTEGER NOT NULL,
             cant_combo_d INTEGER NOT NULL,
             cant_combo_t INTEGER NOT NULL,
@@ -50,7 +50,7 @@ def guardar_pedido(
     fecha_hora = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
 
     cursor.execute(
-        "INSERT INTO pedidos (cliente, fecha_hora cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby, total) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO pedidos (cliente, fecha_hora, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby, total) VALUES (?, ?, ?, ?, ?, ?, ?)",
         (
             cliente,
             fecha_hora,
@@ -60,6 +60,23 @@ def guardar_pedido(
             cant_flurby,
             total,
         ),
+    )
+
+    conn.commit()
+
+    conn.close()
+
+
+def guardar_registro(encargado, evento, caja):
+    conn = sqlite3.connect("comercio.sqlite")
+
+    cursor = conn.cursor()
+
+    fecha_hora = datetime.now().strftime("%a %b %d %H:%M:%S %Y")
+
+    cursor.execute(
+        "INSERT INTO registro (encargado, fecha, evento, caja) VALUES (?, ?, ?, ?)",
+        (encargado, fecha_hora, evento, caja),
     )
 
     conn.commit()

@@ -6,7 +6,14 @@ from database import inicializar_db
 
 def menu():
     running = True
-    encargado = cambiar_encargado()
+    encargado = None
+    while True:
+        encargado = input("Ingrese el nombre del encargado: ")
+        if encargado.isalpha():
+            break
+        print(
+            "El nombre del encargado no puede contener números ni caracteres especiales."
+        )
 
     while running:
         print("Bienvenido a hamburguesas IT")
@@ -24,7 +31,7 @@ def menu():
             if opcion == "1":
                 nuevo_pedido()
             elif opcion == "2":
-                encargado = cambiar_encargado()
+                encargado = cambiar_encargado(encargado)
             elif opcion == "3":
                 print("Saliendo del sistema...")
                 running = False

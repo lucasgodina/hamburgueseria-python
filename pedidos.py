@@ -1,9 +1,12 @@
 # Módulo que contiene las funciones relacionadas con los pedidos y el cambio de encargado.
 
-from database import guardar_pedido
+from database import guardar_pedido, guardar_registro
+
+total_caja = 0
 
 
 def nuevo_pedido():
+    global total_caja
     try:
         cliente = input("Ingrese el nombre del cliente: ")
         cant_combo_s = int(input("Ingrese la cantidad de combos simples: "))
@@ -37,6 +40,7 @@ def nuevo_pedido():
             guardar_pedido(
                 cliente, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby, total
             )
+            total_caja += total  # Actualizar el total de la caja
             print("Pedido confirmado")
         else:
             print("Pedido cancelado")
@@ -46,12 +50,14 @@ def nuevo_pedido():
         print(f"Error inesperado: {e}")
 
 
-def cambiar_encargado():
+def cambiar_encargado(encargado_actual):
+    global total_caja
     while True:
-        nombre = input("Ingrese el nombre del nuevo encargad@: ")
-        if nombre.isalpha():
-            return nombre
+        nuevo_encargado = input("Ingrese el nombre del nuevo encargado: ")
+        if nuevo_encargado.isalpha():
+            if encargado_actual:
+                guardar_registro(encargado_actual, "OUT", total_caja)
+            guardar_registro(nuevo_encargado, "IN", total_caja)
+            return nuevo_encargado
         else:
-            print(
-                "Error: El nombre solo debe contener letras. Por favor, intente de nuevo."
-            )
+            print("Error: El nombre del encargado solo puede contener letras.")
