@@ -1,140 +1,210 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from pedidos import nuevo_pedido, cambiar_encargado
+from pedidos import nuevo_pedido, guardar_registro_out, cambiar_encargado
 
 
 class HamburgueseriaApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Hamburguesería IT")
-        self.root.resizable(0, 0)
-
+        self.root.geometry("400x500")
+        self.root.resizable(False, False)
         self.encargado = None
+        self.create_bienvenida()
 
-        self.create_widgets()
+    def create_bienvenida(self):
+        # Limpiar la ventana
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-    def create_widgets(self):
-        self.frame = ttk.Frame(self.root, padding="10")
-        self.frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        # Mensaje de bienvenida y entrada de encargado
+        self.frame_bienvenida = ttk.Frame(self.root, padding="20")
+        self.frame_bienvenida.pack(expand=True)
 
-        self.label_encargado = ttk.Label(self.frame, text="Encargado:")
-        self.label_encargado.grid(row=0, column=0, sticky=tk.W)
+        ttk.Label(
+            self.frame_bienvenida,
+            text="¡Bienvenido a Hamburguesería IT!",
+            font=("Arial", 14),
+        ).pack(pady=10)
+        ttk.Label(self.frame_bienvenida, text="Encargado:").pack(pady=5)
 
-        self.entry_encargado = ttk.Entry(self.frame)
-        self.entry_encargado.grid(row=0, column=1, sticky=(tk.W, tk.E))
+        self.entry_encargado = ttk.Entry(self.frame_bienvenida)
+        self.entry_encargado.pack(pady=5)
 
-        self.button_set_encargado = ttk.Button(
-            self.frame, text="Establecer Encargado", command=self.set_encargado
+        self.button_confirmar_encargado = ttk.Button(
+            self.frame_bienvenida, text="Confirmar", command=self.set_encargado
         )
-        self.button_set_encargado.grid(row=0, column=2, sticky=tk.W)
-
-        self.button_nuevo_pedido = ttk.Button(
-            self.frame, text="Nuevo Pedido", command=self.nuevo_pedido
-        )
-        self.button_nuevo_pedido.grid(
-            row=1, column=0, columnspan=3, sticky=(tk.W, tk.E)
-        )
-
-        self.button_cambiar_encargado = ttk.Button(
-            self.frame, text="Cambiar Encargado", command=self.cambiar_encargado
-        )
-        self.button_cambiar_encargado.grid(
-            row=2, column=0, columnspan=3, sticky=(tk.W, tk.E)
-        )
+        self.button_confirmar_encargado.pack(pady=20)
 
     def set_encargado(self):
-        encargado = self.entry_encargado.get()
-        if encargado.isalpha():
-            self.encargado = encargado
-            messagebox.showinfo("Encargado", f"Encargado establecido: {encargado}")
+        nuevo_encargado = self.entry_encargado.get()
+        if nuevo_encargado.isalpha():
+            cambiar_encargado(self.encargado, nuevo_encargado)
+            self.encargado = nuevo_encargado
+            self.create_pedido()  # Ir a la pantalla de pedido
         else:
-            messagebox.showerror(
-                "Error", "El nombre del encargado solo puede contener letras."
-            )
+            messagebox.showerror("Error", "El nombre solo puede contener letras.")
 
-    def nuevo_pedido(self):
-        if self.encargado:
-            self.pedido_window = tk.Toplevel(self.root)
-            self.pedido_window.title("Nuevo Pedido")
+    def create_pedido(self):
+        # Limpiar la ventana
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-            ttk.Label(self.pedido_window, text="Cliente:").grid(row=0, column=0)
-            self.entry_cliente = ttk.Entry(self.pedido_window)
-            self.entry_cliente.grid(row=0, column=1)
+        # Pantalla de Pedido
+        self.frame_pedido = ttk.Frame(self.root, padding="20")
+        self.frame_pedido.pack(expand=True)
 
-            ttk.Label(self.pedido_window, text="Combos Simples:").grid(row=1, column=0)
-            self.entry_combo_s = ttk.Entry(self.pedido_window)
-            self.entry_combo_s.grid(row=1, column=1)
+        ttk.Label(self.frame_pedido, text="Nuevo Pedido", font=("Arial", 14)).pack(
+            pady=10
+        )
 
-            ttk.Label(self.pedido_window, text="Combos Dobles:").grid(row=2, column=0)
-            self.entry_combo_d = ttk.Entry(self.pedido_window)
-            self.entry_combo_d.grid(row=2, column=1)
+        # ingresar combos
+        self.entry_cliente = self.create_labeled_entry(self.frame_pedido, "Cliente:")
+        self.entry_combo_s = self.create_labeled_entry(
+            self.frame_pedido, "Combos Simples:", spinbox=True
+        )
+        self.entry_combo_d = self.create_labeled_entry(
+            self.frame_pedido, "Combos Dobles:", spinbox=True
+        )
+        self.entry_combo_t = self.create_labeled_entry(
+            self.frame_pedido, "Combos Triples:", spinbox=True
+        )
+        self.entry_flurby = self.create_labeled_entry(
+            self.frame_pedido, "Flurbys:", spinbox=True
+        )
 
-            ttk.Label(self.pedido_window, text="Combos Triples:").grid(row=3, column=0)
-            self.entry_combo_t = ttk.Entry(self.pedido_window)
-            self.entry_combo_t.grid(row=3, column=1)
+        # Botones de acciones
+        self.button_confirmar_pedido = ttk.Button(
+            self.frame_pedido, text="Confirmar Pedido", command=self.confirmar_pedido
+        )
+        self.button_confirmar_pedido.pack(pady=5)
 
-            ttk.Label(self.pedido_window, text="Flurbys:").grid(row=4, column=0)
-            self.entry_flurby = ttk.Entry(self.pedido_window)
-            self.entry_flurby.grid(row=4, column=1)
+        self.button_cancelar_pedido = ttk.Button(
+            self.frame_pedido, text="Cancelar Pedido", command=self.cancelar_pedido
+        )
+        self.button_cancelar_pedido.pack(pady=5)
 
-            self.button_confirmar_pedido = ttk.Button(
-                self.pedido_window,
-                text="Confirmar Pedido",
-                command=self.confirmar_pedido,
-            )
-            self.button_confirmar_pedido.grid(row=5, column=0, columnspan=2)
+        self.button_cambiar_encargado = ttk.Button(
+            self.frame_pedido, text="Cambiar Empleado", command=self.create_bienvenida
+        )
+        self.button_cambiar_encargado.pack(pady=5)
 
+        self.button_salir_seguro = ttk.Button(
+            self.frame_pedido, text="Salir Seguro", command=self.salir_seguro
+        )
+
+        self.button_salir_seguro.pack(pady=5)
+
+    def salir_seguro(self):
+        if messagebox.askyesno("Confirmar Salida", "¿Está seguro de que desea salir?"):
+            if self.encargado:
+                guardar_registro_out(self.encargado)
+                messagebox.showinfo(
+                    "Salida", "Registro guardado. Saliendo del programa."
+                )
+            self.root.destroy()  # Cerrar la ventana principal
+
+    def create_labeled_entry(self, parent, label_text, spinbox=False):
+        # Método crear etiquetas y entradas
+        frame = ttk.Frame(parent)
+        frame.pack(fill="x", pady=5)
+        ttk.Label(frame, text=label_text).pack(side="left", padx=5)
+
+        if spinbox:
+            entry = ttk.Spinbox(frame, from_=0, to=10, width=5)
         else:
-            messagebox.showerror("Error", "Debe establecer un encargado primero.")
+            entry = ttk.Entry(frame)
+
+        entry.pack(side="right", padx=5)
+        return entry
 
     def confirmar_pedido(self):
         try:
             cliente = self.entry_cliente.get()
-            cant_combo_s = int(self.entry_combo_s.get())
-            cant_combo_d = int(self.entry_combo_d.get())
-            cant_combo_t = int(self.entry_combo_t.get())
-            cant_flurby = int(self.entry_flurby.get())
+            if self.entry_combo_s.get():
+                cant_combo_s = int(self.entry_combo_s.get())
+            else:
+                cant_combo_s = 0
+            if self.entry_combo_d.get():
+                cant_combo_d = int(self.entry_combo_d.get())
+            else:
+                cant_combo_d = 0
+            if self.entry_combo_t.get():
+                cant_combo_t = int(self.entry_combo_t.get())
+            else:
+                cant_combo_t = 0
+            if self.entry_flurby.get():
+                cant_flurby = int(self.entry_flurby.get())
+            else:
+                cant_flurby = 0
 
-            total = nuevo_pedido(
-                cliente, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby
-            )
-            messagebox.showinfo("Pedido Confirmado", f"Total a pagar: ${total}")
-            self.pedido_window.destroy()
+            if (
+                cant_combo_s != 0
+                or cant_combo_d != 0
+                or cant_combo_t != 0
+                or cant_flurby != 0
+            ):
+                self.total_pesos = nuevo_pedido(
+                    cliente, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby
+                )
+
+                self.create_resumen(self.total_pesos)  # Ir a la pantalla de resumen
+            else:
+                messagebox.showerror(
+                    "Error", "Por favor, ingrese mínimo un valor distinto de 0."
+                )
         except ValueError:
             messagebox.showerror("Error", "Por favor, ingrese valores válidos.")
         except Exception as e:
             messagebox.showerror("Error", f"Error inesperado: {e}")
 
-    def cambiar_encargado(self):
-        if self.encargado:
-            self.cambiar_encargado_window = tk.Toplevel(self.root)
-            self.cambiar_encargado_window.title("Cambiar Encargado")
+    def cancelar_pedido(self):
+        # Limpiar los campos del pedido
+        self.entry_cliente.delete(0, tk.END)
+        self.entry_combo_s.delete(0, tk.END)
+        self.entry_combo_d.delete(0, tk.END)
+        self.entry_combo_t.delete(0, tk.END)
+        self.entry_flurby.delete(0, tk.END)
 
-            ttk.Label(self.cambiar_encargado_window, text="Nuevo Encargado:").grid(
-                row=0, column=0
-            )
-            self.entry_nuevo_encargado = ttk.Entry(self.cambiar_encargado_window)
-            self.entry_nuevo_encargado.grid(row=0, column=1)
+    def create_resumen(self, total_pesos):
+        # Limpiar la ventana
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-            self.button_confirmar_cambio = ttk.Button(
-                self.cambiar_encargado_window,
-                text="Confirmar Cambio",
-                command=self.confirmar_cambio_encargado,
-            )
-            self.button_confirmar_cambio.grid(row=1, column=0, columnspan=2)
-        else:
-            messagebox.showerror("Error", "Debe establecer un encargado primero.")
+        # Pantalla de Resumen de Pago
+        self.frame_resumen = ttk.Frame(self.root, padding="20")
+        self.frame_resumen.pack(expand=True)
 
-    def confirmar_cambio_encargado(self):
-        nuevo_encargado = self.entry_nuevo_encargado.get()
-        if nuevo_encargado.isalpha():
-            self.encargado = cambiar_encargado(self.encargado, nuevo_encargado)
-            messagebox.showinfo("Encargado", f"Nuevo encargado: {nuevo_encargado}")
-            self.cambiar_encargado_window.destroy()
-        else:
-            messagebox.showerror(
-                "Error", "El nombre del encargado solo puede contener letras."
+        ttk.Label(self.frame_resumen, text="Resumen de Pago", font=("Arial", 14)).pack(
+            pady=10
+        )
+
+        ttk.Label(self.frame_resumen, text=f"Total en Pesos: ${total_pesos:.2f}").pack(
+            pady=5
+        )
+
+        self.entry_pago_cliente = self.create_labeled_entry(
+            self.frame_resumen, "Paga con:"
+        )
+
+        self.button_confirmar_pago = ttk.Button(
+            self.frame_resumen, text="Confirmar Pago", command=self.confirmar_pago
+        )
+        self.button_confirmar_pago.pack(pady=20)
+
+    def confirmar_pago(self):
+        try:
+            paga_con = float(self.entry_pago_cliente.get())
+            if paga_con < self.total_pesos:
+                messagebox.showerror("Error", "No hay suficiente dinero para pagar.")
+                return
+            cambio = paga_con - self.total_pesos
+            messagebox.showinfo(
+                "Pago Confirmado", "Su vuelto es: ${:.2f}".format(cambio)
             )
+            self.create_pedido()  # Volver a la pantalla de pedido
+        except ValueError:
+            messagebox.showerror("Error", "Por favor, ingrese un valor válido.")
 
 
 if __name__ == "__main__":

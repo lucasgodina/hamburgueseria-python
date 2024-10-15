@@ -1,8 +1,27 @@
 # Módulo que contiene las funciones relacionadas con los pedidos y el cambio de encargado.
 
 from database import guardar_pedido, guardar_registro
+import requests  # Para la consulta de valor del dólar
 
 total_caja = 0
+
+
+def obtener_valor_dolar():
+    try:
+        # Suponiendo que tienes una API para consultar el valor del dólar:
+        response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+        data = response.json()
+        # Supongamos que el precio del dólar en pesos está en el campo "rates" con clave "ARS"
+        valor_dolar = data["rates"]["ARS"]
+        return valor_dolar
+    except Exception as e:
+        print(f"Error al obtener el valor del dólar: {e}")
+        # Valor predeterminado en caso de que falle la consulta
+        return 1000.0
+
+
+valor_dolar = obtener_valor_dolar()
+
 
 # Versión anterior de la función nuevo_pedido que no se utiliza en la interfaz gráfica.
 # def nuevo_pedido():
@@ -52,7 +71,9 @@ total_caja = 0
 
 def nuevo_pedido(cliente, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby):
     global total_caja
-    total = cant_combo_s * 5 + cant_combo_d * 6 + cant_combo_t * 7 + cant_flurby * 2
+    total = (
+        cant_combo_s * 5 + cant_combo_d * 6 + cant_combo_t * 7 + cant_flurby * 2
+    ) * valor_dolar
     guardar_pedido(
         cliente, cant_combo_s, cant_combo_d, cant_combo_t, cant_flurby, total
     )
@@ -80,3 +101,9 @@ def cambiar_encargado(encargado_actual, nuevo_encargado):
         guardar_registro(encargado_actual, "OUT", total_caja)
     guardar_registro(nuevo_encargado, "IN", total_caja)
     return nuevo_encargado
+
+
+def guardar_registro_out(encargado):
+    global total_caja
+    guardar_registro(encargado, "OUT", total_caja)
+    return

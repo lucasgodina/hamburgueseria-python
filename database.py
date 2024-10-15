@@ -19,7 +19,7 @@ def inicializar_db():
             cant_combo_d INTEGER NOT NULL,
             cant_combo_t INTEGER NOT NULL,
             cant_flurby INTEGER NOT NULL,
-            total INTEGER NOT NULL
+            total REAL NOT NULL
         )"""
     )
 
