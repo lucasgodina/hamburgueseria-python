@@ -12,7 +12,7 @@ Este proyecto es una aplicación de escritorio para gestionar una hamburgueserí
 
 1. Clona el repositorio:
    ```sh
-   git clone https://github.com/tu_usuario/hamburgueseria-python.git
+   git clone https://github.com/lucasgodina/hamburgueseria-python.git
    ```
 2. Navega al directorio del proyecto:
    ```sh
