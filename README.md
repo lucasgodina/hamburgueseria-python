@@ -1,7 +1,5 @@
 # Hamburguesería IT
 
-# Hamburguesería IT
-
 Este proyecto es una aplicación de escritorio para gestionar una hamburguesería. Permite realizar pedidos, cambiar de encargado y llevar un registro de las ventas y encargados.
 
 ## Requisitos
