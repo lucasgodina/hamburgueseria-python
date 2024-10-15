@@ -25,11 +25,7 @@ Este proyecto es una aplicación de escritorio para gestionar una hamburgueserí
 
 ## Uso
 
-1. Inicializa la base de datos:
-   ```sh
-   python database.py
-   ```
-2. Ejecuta la aplicación:
+Ejecuta la aplicación:
    ```sh
    python hamburgueseria.py
    ```
