@@ -121,6 +121,10 @@ class HamburgueseriaApp:
     def confirmar_pedido(self):
         try:
             cliente = self.entry_cliente.get()
+
+            if not cliente.isalpha():
+                messagebox.showerror("Error", "El nombre solo puede contener letras.")
+                return
             if self.entry_combo_s.get():
                 cant_combo_s = int(self.entry_combo_s.get())
             else:
